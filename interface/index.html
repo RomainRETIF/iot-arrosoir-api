@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="index.js"></script>
     <title>Système d’éclairage et d’irrigation intelligent</title>
             <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -24,6 +23,40 @@
 
     </header>
 
+
+    <div class="row">
+
+        <div class="parametres">
+
+                <h2 class="titre_parametres">Paramètres</h2>
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Température</th>
+                      <th scope="col">Humidité</th>
+                      <th scope="col">Luminosité</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><input type="text" name="" id="txttemperature"></td>
+                      <td><input type="text" name="" id="txthumidite"></td>
+                      <td><input type="text" name="" id="txtluminosite"></td>
+
+                    </tr>
+
+                  </tbody>
+                </table>
+                <input style="margin-left: 10%" type="submit" value="Valider" id="btnsubmit">
+                
+        </div>
+    </div>
+
+
+
+
+
     <div class="row">
 
         <div class="historique">
@@ -41,15 +74,7 @@
                       <th scope="col">Durée de l'arrosage</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>29/05/2021</td>
-                      <td>25°C</td>
-                      <td>X</td>
-                      <td>X</td>
-                      <td>X</td>
-
-                    </tr>
+                  <tbody id="tableHistorique">
                   </tbody>
                 </table>
 
@@ -58,40 +83,47 @@
         </div>
     </div>
 
-    <div class="row">
-
-        <div class="parametres">
-
-                <h2 class="titre_parametres">Paramètres</h2>
-
-
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Température</th>
-                      <th scope="col">Humidité</th>
-                      <th scope="col">Luminosité</th>
-                      <th scope="col">Durée de l'arrosage</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>25°C</td>
-                      <td>X</td>
-                      <td>X</td>
-                      <td>X</td>
-
-                    </tr>
-                  </tbody>
-                </table>
-
-
-        </div>
-    </div>
-
-
-
+    
 </div>
 
 </body>
 </html>
+
+<script>
+  window.onload = function(){
+
+    loadHistorique();
+
+    document.querySelector("#btnsubmit").addEventListener("click", function(){
+      let stringJson = {"temperature": document.querySelector("#txttemperature").value, "humidite": document.querySelector("#txthumidite").value, "luminosite": document.querySelector("#txtluminosite").value};
+      (async () => {
+        const rawResponse = await fetch('http://localhost:3000/api/parametres/update', {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(stringJson)
+        });
+        const content = await rawResponse.json();
+      })();
+    });
+  }
+
+  function loadHistorique(){
+    (async () => {
+        const rawResponse = await fetch('http://localhost:3000/api/historique/', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        });
+        const historique = await rawResponse.json();
+        let bodyHistorique = document.querySelector("#tableHistorique");
+        historique.forEach(entree => {
+          bodyHistorique.innerHTML = bodyHistorique.innerHTML + "<tr><td>" + entree.date_heure + "</td><td>" + entree.temperature + "</td><td>" + entree.humidite + "</td><td>" + entree.luminosite + "</td><td>" + entree.duree_arrosage + "</td></tr>";
+        });
+      })();
+  }
+</script>

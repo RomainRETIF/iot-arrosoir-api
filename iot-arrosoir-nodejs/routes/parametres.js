@@ -19,7 +19,7 @@ router.put('/update', (req, res) => {
     const bodyCorrect = format.putBodyFormat.validate(req.body);
     if(bodyCorrect.error)
         return res.status(400).send(bodyCorrect.error.details[0].message);
-    let query = "UPDATE parametres SET temperature = " + req.body.temperature + ", humidite = " + req.body.humidite + ", luminosite = " + req.body.luminosite + ", duree_arrosage = " + req.body.duree_arrosage;
+    let query = "UPDATE parametres SET temperature = " + req.body.temperature + ", humidite = " + req.body.humidite + ", luminosite = " + req.body.luminosite + ", duree_arrosage = " + 2;
     connection.query(query, (err, result, fields) => {
         if(err) throw err;
         return res.status(200).send(result);
